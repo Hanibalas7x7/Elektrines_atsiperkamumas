@@ -32,5 +32,5 @@ npm run build    # produkcinis build (tsc + vite build)
 - **Mėnesinis granuliariškumas**: gamyba ir suvartojimas skaičiuojami 12 mėnesių tikslumu, ne valandiniu profiliu.
 - **"Kaupimo" scenarijus**: mėnesio perteklius kaupiamas kaip kWh kreditas ir naudojamas vėlesnių mėnesių trūkumui dengti superkimo kaina; likutis perkamas įprasta kaina. Nepanaudotas kreditas metų pabaigoje nulinamas.
 - **Baterijos scenarijus**: kadangi mėnesio suminiai duomenys nerodo dienos/nakties skirtumo, naudojama prielaida, kad ~35% mėnesio suvartojimo vyksta gamybos (dienos) metu, o 65% - vakare/naktį. Baterija kaupia dienos perteklių ir jį naudoja nakties poreikiui, ribojama talpos ir ciklo efektyvumo. Realus rezultatas priklauso nuo tikslaus paros profilio.
-- **Panelių degradacija** (~0.5%/metus) neįtraukta.
+- **Panelių degradacija** (~0.5%/metus, konfigūruojama) ir **baterijos degradacija** (~2%/metus) įskaičiuotos daugiametėje atsipirkimo simuliacijoje. Momentinė mėnesių lentelė rodo 0-tų metų (be degradacijos) vaizdą.
 - Saulės ir šildymo skaičiuotuvai tarpusavyje nesujungti — dalinasi tik bendra elektros kaina/brangimu.

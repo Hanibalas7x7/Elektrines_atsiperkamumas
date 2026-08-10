@@ -61,6 +61,20 @@ export interface SolarInputs {
   hasExportPowerLimit: boolean
   /** Permitted export power (kW) when hasExportPowerLimit is true - can be far below capacityKw. */
   exportPowerLimitKw: number
+  /**
+   * Whether the inverter uses synchronous (symmetric) 3-phase export: all three phases are
+   * constrained equally, so the per-phase export cap is exportPowerLimitKw/3. Irrelevant for
+   * single-phase connections or when exportPowerLimitKw ≥ capacityKw (limit not binding).
+   */
+  threePhaseSyncMode: boolean
+  /**
+   * Phase load imbalance level (0–100). 0 = symmetric load across all phases (no penalty).
+   * 100 = worst case: all consumption on one phase, so that phase absorbs its own solar locally
+   * but its unused export budget cannot be transferred to the other two phases, which are each
+   * still capped at exportPowerLimitKw/3. Effective limit = exportPowerLimitKw × (1 − factor/300),
+   * ranging from ×1.0 (symmetric) to ×0.667 (fully asymmetric). Only used when threePhaseSyncMode.
+   */
+  phaseAsymmetryFactor: number
 
   /** Annual reserve (EUR, year-1 value) for maintenance and possible failures (inverter replacement, minor repairs), escalated yearly like other running costs. */
   annualMaintenanceCost: number

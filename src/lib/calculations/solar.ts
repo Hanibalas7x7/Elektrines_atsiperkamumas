@@ -351,7 +351,11 @@ function splitMonthlySurplusDeficit(
     inputs.daytimeConsumptionShare / 100,
     inputs.batteryUsableCapacityPct / 100,
   )
-  const limitKw = inputs.hasExportPowerLimit ? inputs.exportPowerLimitKw : Infinity
+  const rawLimitKw = inputs.hasExportPowerLimit ? inputs.exportPowerLimitKw : Infinity
+  const limitKw =
+    inputs.threePhaseSyncMode && rawLimitKw < Infinity
+      ? rawLimitKw * (1 - inputs.phaseAsymmetryFactor / 300)
+      : rawLimitKw
   const fraction = exportableEnergyFraction(limitKw, inputs.capacityKw)
   if (fraction >= 1) {
     return {

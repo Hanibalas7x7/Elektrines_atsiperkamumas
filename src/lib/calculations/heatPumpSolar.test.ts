@@ -46,6 +46,8 @@ function baseSolarInputs(overrides: Partial<SolarInputs> = {}): SolarInputs {
     otherCosts: 0,
     hasExportPowerLimit: false,
     exportPowerLimitKw: 0,
+    threePhaseSyncMode: false,
+    phaseAsymmetryFactor: 0,
     annualMaintenanceCost: 0,
     maintenanceCostEscalationPct: 0,
     useDirectProduction: false,

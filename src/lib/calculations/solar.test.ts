@@ -39,6 +39,8 @@ function baseInputs(overrides: Partial<SolarInputs> = {}): SolarInputs {
     otherCosts: 0,
     hasExportPowerLimit: false,
     exportPowerLimitKw: 0,
+    threePhaseSyncMode: false,
+    phaseAsymmetryFactor: 0,
     annualMaintenanceCost: 0,
     maintenanceCostEscalationPct: 0,
     useDirectProduction: false,
@@ -392,6 +394,55 @@ describe('export power limit', () => {
     // Curtailed energy can no longer be banked as credit, so more of the winter deficit must be
     // bought at full price instead - restricted export can only make the annual cost worse or equal.
     expect(restricted).toBeGreaterThanOrEqual(unrestricted)
+  })
+
+  it('3-phase sync mode with high asymmetry reduces effective export limit to 2/3', () => {
+    // With capacityKw=10, exportPowerLimitKw=3, fraction ~ 0.426
+    // With threePhaseSyncMode + phaseAsymmetryFactor=100: effective limit = 3*(1-100/300)=2kW, fraction ~0.294
+    // => 3-phase high asymmetry must curtail more than single-phase with same limitKw
+    const base = baseInputs({ annualYieldKwhPerKwp: 1200, capacityKw: 10, annualConsumptionKwh: 0 })
+    const singlePhase = computeMonthlyBreakdown(
+      { ...base, hasExportPowerLimit: true, exportPowerLimitKw: 3 },
+      shares,
+    )
+    const threePhaseHigh = computeMonthlyBreakdown(
+      { ...base, hasExportPowerLimit: true, exportPowerLimitKw: 3, threePhaseSyncMode: true, phaseAsymmetryFactor: 100 },
+      shares,
+    )
+    const curtailedSingle = singlePhase.reduce((s, r) => s + r.curtailedByExportLimit, 0)
+    const curtailedThreeHigh = threePhaseHigh.reduce((s, r) => s + r.curtailedByExportLimit, 0)
+    expect(curtailedThreeHigh).toBeGreaterThan(curtailedSingle)
+  })
+
+  it('3-phase sync mode with asymmetryFactor=100 matches a single-phase effective limit of 2/3*limitKw', () => {
+    const base = baseInputs({ annualYieldKwhPerKwp: 1200, capacityKw: 10, annualConsumptionKwh: 0 })
+    const effectiveLimitKw = 3 * (1 - 100 / 300) // = 2
+    const threePhaseHigh = computeMonthlyBreakdown(
+      { ...base, hasExportPowerLimit: true, exportPowerLimitKw: 3, threePhaseSyncMode: true, phaseAsymmetryFactor: 100 },
+      shares,
+    )
+    const singlePhaseEquivalent = computeMonthlyBreakdown(
+      { ...base, hasExportPowerLimit: true, exportPowerLimitKw: effectiveLimitKw },
+      shares,
+    )
+    threePhaseHigh.forEach((row, i) => {
+      expect(row.curtailedByExportLimit).toBeCloseTo(singlePhaseEquivalent[i].curtailedByExportLimit, 6)
+    })
+  })
+
+  it('3-phase sync mode with symmetric load (factor=0) does not add extra penalty', () => {
+    const base = baseInputs({ annualYieldKwhPerKwp: 1200, capacityKw: 10, annualConsumptionKwh: 0 })
+    const mono = computeMonthlyBreakdown(
+      { ...base, hasExportPowerLimit: true, exportPowerLimitKw: 3 },
+      shares,
+    )
+    const threePhaseSymmetric = computeMonthlyBreakdown(
+      { ...base, hasExportPowerLimit: true, exportPowerLimitKw: 3, threePhaseSyncMode: true, phaseAsymmetryFactor: 0 },
+      shares,
+    )
+    mono.forEach((row, i) => {
+      expect(row.curtailedByExportLimit).toBeCloseTo(threePhaseSymmetric[i].curtailedByExportLimit, 6)
+    })
   })
 })
 

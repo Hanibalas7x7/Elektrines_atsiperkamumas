@@ -68,6 +68,8 @@ export const DEFAULT_SOLAR_LOCAL: SolarLocalInputs = {
   otherCosts: 1000,
   hasExportPowerLimit: false,
   exportPowerLimitKw: 5,
+  threePhaseSyncMode: false,
+  phaseAsymmetryFactor: 50,
   annualMaintenanceCost: DEFAULT_ANNUAL_MAINTENANCE_COST,
   maintenanceCostEscalationPct: 3,
   useDirectProduction: false,
@@ -272,6 +274,31 @@ export function SolarCalculator() {
                   suffix="kW"
                 />
                 <p className="text-sm text-slate-600 sm:col-span-2">{t('solar.exportPowerLimitHint')}</p>
+                <label className="flex items-center gap-2 text-sm sm:col-span-2">
+                  <input
+                    type="checkbox"
+                    checked={local.threePhaseSyncMode}
+                    onChange={(e) => update('threePhaseSyncMode', e.target.checked)}
+                  />
+                  {t('solar.threePhaseSyncModeLabel')}
+                </label>
+                {local.threePhaseSyncMode && (
+                  <>
+                    <label className="flex flex-col gap-1 text-sm">
+                      <span className="font-medium text-slate-700">{t('solar.phaseAsymmetryLabel')}</span>
+                      <select
+                        className="rounded-md border border-slate-300 px-3 py-1.5 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                        value={local.phaseAsymmetryFactor}
+                        onChange={(e) => update('phaseAsymmetryFactor', Number(e.target.value))}
+                      >
+                        <option value={0}>{t('solar.phaseAsymmetrySymmetric')}</option>
+                        <option value={50}>{t('solar.phaseAsymmetryModerate')}</option>
+                        <option value={100}>{t('solar.phaseAsymmetryHigh')}</option>
+                      </select>
+                    </label>
+                    <p className="text-sm text-slate-600 sm:col-span-2">{t('solar.threePhaseSyncHint')}</p>
+                  </>
+                )}
               </>
             ) : (
               <p className="text-sm text-slate-600 sm:col-span-2">{t('solar.exportPowerLimitOffHint')}</p>
