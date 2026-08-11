@@ -41,6 +41,7 @@ function baseInputs(overrides: Partial<SolarInputs> = {}): SolarInputs {
     exportPowerLimitKw: 0,
     threePhaseSyncMode: false,
     phaseAsymmetryFactor: 0,
+    expiredCreditCompensationPerKwh: 0,
     annualMaintenanceCost: 0,
     maintenanceCostEscalationPct: 0,
     useDirectProduction: false,
@@ -135,6 +136,52 @@ describe('simulateNetMeteringMonthly', () => {
     const deficit = new Array(12).fill(0)
     const monthly = simulateNetMeteringMonthly(surplus, deficit, 1)
     expect(monthly.bankBalance[2]).toBe(60)
+  })
+
+  it('reports expired credits when banked surplus is never consumed', () => {
+    // Only surplus in March, no deficit - each March's batch expires 24 months later.
+    // In steady state, 30 kWh expire each March.
+    const surplus = [0, 0, 30, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    const deficit = new Array(12).fill(0)
+    const monthly = simulateNetMeteringMonthly(surplus, deficit, 1)
+    const totalExpired = monthly.expiredCredits.reduce((s, v) => s + v, 0)
+    expect(totalExpired).toBeCloseTo(30, 5)
+  })
+})
+
+describe('expired credit compensation', () => {
+  it('reduces annual cost when expired credits are compensated', () => {
+    // Large surplus, no deficit - all surplus expires after 24 months.
+    // With compensation > 0 the annual cost should be lower.
+    const base = baseInputs({ annualYieldKwhPerKwp: 2000, capacityKw: 5, annualConsumptionKwh: 100 })
+    const noComp = computeSolarAnnualCost(
+      { ...base, expiredCreditCompensationPerKwh: 0 },
+      distributeByShares(10000, shares),
+      distributeEvenly(100),
+      'none',
+      'per-kwh-fee',
+      0,
+    )
+    const withComp = computeSolarAnnualCost(
+      { ...base, expiredCreditCompensationPerKwh: 0.05 },
+      distributeByShares(10000, shares),
+      distributeEvenly(100),
+      'none',
+      'per-kwh-fee',
+      0,
+    )
+    expect(withComp).toBeLessThan(noComp)
+  })
+
+  it('has no effect when all banked credits are consumed before expiry', () => {
+    // Symmetric surplus/deficit: summer surplus exactly covers winter deficit, nothing expires.
+    const base = baseInputs({ annualYieldKwhPerKwp: 1000, capacityKw: 3, annualConsumptionKwh: 3000 })
+    const production = distributeByShares(3000, shares)
+    const consumption = distributeEvenly(3000)
+    const noComp = computeSolarAnnualCost({ ...base, expiredCreditCompensationPerKwh: 0 }, production, consumption, 'none', 'per-kwh-fee', 0)
+    const withComp = computeSolarAnnualCost({ ...base, expiredCreditCompensationPerKwh: 0.1 }, production, consumption, 'none', 'per-kwh-fee', 0)
+    // When no credits expire, compensation rate does not matter
+    expect(withComp).toBeCloseTo(noComp, 2)
   })
 })
 

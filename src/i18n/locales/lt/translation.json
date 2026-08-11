@@ -56,6 +56,8 @@
     "phaseAsymmetryModerate": "Vidutinė asimetrija (×0.83 — apytikslis nuostolis)",
     "phaseAsymmetryHigh": "Didelė asimetrija (×0.67 — blogiausias atvejis)",
     "threePhaseSyncHint": "Sinchroniniame trifaziame inverteryje eksporto limitas taikomas kiekvienai fazei atskirai (limitKw ÷ 3). Jei apkrova sutelkta vienoje fazėje (ji vartoja saulės energiją vietoje), kitų dviejų fazių nepanaudotas eksporto 'biudžetas' negali būti perduotas — iš viso eksportuojama ne daugiau kaip 2/3 viso limito. Tai aktualu tik kai eksporto limitas riboja gamybą (t.y. limitas < elektrinės galia).",
+    "expiredCreditCompensationPerKwh": "Kompensacija už pasibaigusius kaupimo kreditus",
+    "expiredCreditCompensationHint": "ESO moka nedidelę kompensaciją už kWh kreditus, kurių galiojimas pasibaigė (nesunaudoti per 24 mėn. laikotarpį). Šiuo metu apytiksliai atitinka biržos kainą — apie 0,03 €/kWh, tačiau tai kinta. Nustatykite 0, jei norite konservatyvaus varianto (be kompensacijos).",
     "sectionSystem": "Elektrinės parametrai",
     "capacityKw": "Elektrinės galia (kW)",
     "costMode": "Kainos skaičiavimo būdas",

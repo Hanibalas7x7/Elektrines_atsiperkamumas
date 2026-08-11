@@ -78,6 +78,8 @@ export function computeMonthlySurplusDeficit(
 export interface NetMeteringResult {
   boughtAtNormalPrice: number
   retrievedFromBank: number
+  /** Total kWh of banked credit that expired unused within the year (24-month window elapsed). */
+  expiredCredits: number
 }
 
 export interface NetMeteringMonthlyResult {
@@ -87,6 +89,8 @@ export interface NetMeteringMonthlyResult {
   retrievedFromBank: MonthlyValues
   /** Credit bank balance (kWh) remaining at the end of each month. */
   bankBalance: MonthlyValues
+  /** kWh of banked credit that expired unused each month (24-month window exhausted). */
+  expiredCredits: MonthlyValues
 }
 
 /**
@@ -114,11 +118,14 @@ export function simulateNetMeteringMonthly(
   const boughtAtNormalPrice: MonthlyValues = []
   const retrievedFromBank: MonthlyValues = []
   const bankBalance: MonthlyValues = []
+  const expiredCredits: MonthlyValues = []
 
   for (let i = 0; i < totalMonths; i++) {
     const m = i % MONTHS_IN_YEAR
 
+    let expired = 0
     while (batches.length > 0 && i - batches[0].bankedMonth >= creditValidityMonths) {
+      expired += batches[0].amount
       batches.shift() // credit older than 24 months expires, unused.
     }
 
@@ -140,10 +147,11 @@ export function simulateNetMeteringMonthly(
       retrievedFromBank.push(usedFromBank)
       boughtAtNormalPrice.push(remainingDeficit)
       bankBalance.push(batches.reduce((sum, b) => sum + b.amount, 0))
+      expiredCredits.push(expired)
     }
   }
 
-  return { boughtAtNormalPrice, retrievedFromBank, bankBalance }
+  return { boughtAtNormalPrice, retrievedFromBank, bankBalance, expiredCredits }
 }
 
 /** Annual totals variant of {@link simulateNetMeteringMonthly}, used for the yearly cost calculation. */
@@ -156,6 +164,7 @@ export function simulateNetMetering(
   return {
     boughtAtNormalPrice: monthly.boughtAtNormalPrice.reduce((sum, v) => sum + v, 0),
     retrievedFromBank: monthly.retrievedFromBank.reduce((sum, v) => sum + v, 0),
+    expiredCredits: monthly.expiredCredits.reduce((sum, v) => sum + v, 0),
   }
 }
 
@@ -302,8 +311,9 @@ export function computeSolarAnnualCost(
   const { surplus, deficit } = splitMonthlySurplusDeficit(degradedBatteryInputs, degradedProduction, monthlyConsumption, batteryMode)
 
   const { creditFactor, feeRatePerKwh, flatFeeAnnual } = getSettlementMethodParams(settlementMethod, inputs, year)
-  const { boughtAtNormalPrice, retrievedFromBank } = simulateNetMetering(surplus, deficit, creditFactor)
-  return boughtAtNormalPrice * electricityPrice + retrievedFromBank * feeRatePerKwh + flatFeeAnnual + maintenanceCost
+  const { boughtAtNormalPrice, retrievedFromBank, expiredCredits } = simulateNetMetering(surplus, deficit, creditFactor)
+  const expiredCompensation = expiredCredits * inputs.expiredCreditCompensationPerKwh
+  return boughtAtNormalPrice * electricityPrice + retrievedFromBank * feeRatePerKwh + flatFeeAnnual + maintenanceCost - expiredCompensation
 }
 
 /**
@@ -409,6 +419,8 @@ export interface MonthlyBreakdownRow {
   bankBalance: number
   /** Would-be-exported energy lost to ESO's permitted export power limit, if one is set. */
   curtailedByExportLimit: number
+  /** kWh of banked credit that expired unused this month (24-month window elapsed); these are compensated at expiredCreditCompensationPerKwh. */
+  expiredCredits: number
 }
 
 /**
@@ -450,6 +462,7 @@ export function computeMonthlyBreakdown(
     boughtFullPrice: netMetering ? netMetering.boughtAtNormalPrice[m] : deficit[m],
     bankBalance: netMetering ? netMetering.bankBalance[m] : 0,
     curtailedByExportLimit: isExportable ? curtailed[m] : 0,
+    expiredCredits: netMetering ? netMetering.expiredCredits[m] : 0,
   }))
 }
 

@@ -56,6 +56,8 @@
     "phaseAsymmetryModerate": "Moderate asymmetry (×0.83 — approximate loss)",
     "phaseAsymmetryHigh": "High asymmetry (×0.67 — worst case)",
     "threePhaseSyncHint": "With a synchronous 3-phase inverter the export limit is enforced per phase (limitKw ÷ 3). If load is concentrated on one phase (which absorbs its own solar locally), the unused export budget of that phase cannot be transferred to the other two — total effective export is at most 2/3 of the full limit. This only matters when the export limit is actually binding (i.e. limit < system capacity).",
+    "expiredCreditCompensationPerKwh": "Compensation for expired banking credits",
+    "expiredCreditCompensationHint": "ESO pays a small compensation for kWh credits that expire unused after the 24-month banking window. This is roughly the electricity exchange (NordPool) spot price — approximately €0.03/kWh, though it varies. Set to 0 for a conservative estimate (no compensation).",
     "sectionSystem": "System parameters",
     "capacityKw": "System capacity (kW)",
     "costMode": "Cost calculation mode",

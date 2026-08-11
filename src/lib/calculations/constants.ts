@@ -49,6 +49,14 @@ export const DEFAULT_PANEL_DEGRADATION_PCT = 0.5
 export const DEFAULT_BATTERY_DEGRADATION_PCT = 2
 
 /**
+ * Default compensation rate (EUR/kWh) paid by the grid operator for accumulated kWh credits that
+ * expire after the 24-month rolling banking window. In Lithuania ESO pays approximately the
+ * electricity exchange (NordPool) spot price - roughly 0.03 EUR/kWh in recent years, though this
+ * varies with market conditions. Set to 0 to model the conservative case (no compensation).
+ */
+export const DEFAULT_EXPIRED_CREDIT_COMPENSATION_PER_KWH = 0.03
+
+/**
  * Rough annual reserve (EUR, year-1 value) for system maintenance and possible failures - inverter
  * replacement (typically needed once every ~12-15 years) averaged per year, plus minor repairs and
  * panel cleaning. A starting estimate only - real costs vary with system size, component quality

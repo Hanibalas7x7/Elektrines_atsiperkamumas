@@ -12,6 +12,7 @@ import {
   DEFAULT_BATTERY_USABLE_CAPACITY_PCT,
   DEFAULT_CAPACITY_FEE_PER_KW_MONTH,
   DEFAULT_DAYTIME_CONSUMPTION_SHARE,
+  DEFAULT_EXPIRED_CREDIT_COMPENSATION_PER_KWH,
   DEFAULT_MONTHLY_PRODUCTION_SHARE,
   DEFAULT_PANEL_DEGRADATION_PCT,
   DEFAULT_PER_KWH_FEE,
@@ -70,6 +71,7 @@ export const DEFAULT_SOLAR_LOCAL: SolarLocalInputs = {
   exportPowerLimitKw: 5,
   threePhaseSyncMode: false,
   phaseAsymmetryFactor: 50,
+  expiredCreditCompensationPerKwh: DEFAULT_EXPIRED_CREDIT_COMPENSATION_PER_KWH,
   annualMaintenanceCost: DEFAULT_ANNUAL_MAINTENANCE_COST,
   maintenanceCostEscalationPct: 3,
   useDirectProduction: false,
@@ -303,6 +305,15 @@ export function SolarCalculator() {
             ) : (
               <p className="text-sm text-slate-600 sm:col-span-2">{t('solar.exportPowerLimitOffHint')}</p>
             )}
+
+            <NumberField
+              label={t('solar.expiredCreditCompensationPerKwh')}
+              value={local.expiredCreditCompensationPerKwh}
+              onChange={(v) => update('expiredCreditCompensationPerKwh', v)}
+              step={0.001}
+              suffix="€/kWh"
+            />
+            <p className="text-sm text-slate-600 sm:col-span-2">{t('solar.expiredCreditCompensationHint')}</p>
           </>
         )}
       </Section>

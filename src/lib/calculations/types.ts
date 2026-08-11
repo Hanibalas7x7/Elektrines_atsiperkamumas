@@ -76,6 +76,14 @@ export interface SolarInputs {
    */
   phaseAsymmetryFactor: number
 
+  /**
+   * Compensation rate (EUR/kWh) paid by the grid operator for kWh credits that expire after the
+   * 24-month banking window without being consumed. In Lithuania ESO pays roughly the NordPool
+   * spot price (~0.03 EUR/kWh). Set to 0 for the conservative (no compensation) assumption.
+   * Only relevant for settlement methods that use the credit bank (all except 'no-export').
+   */
+  expiredCreditCompensationPerKwh: number
+
   /** Annual reserve (EUR, year-1 value) for maintenance and possible failures (inverter replacement, minor repairs), escalated yearly like other running costs. */
   annualMaintenanceCost: number
   maintenanceCostEscalationPct: number
