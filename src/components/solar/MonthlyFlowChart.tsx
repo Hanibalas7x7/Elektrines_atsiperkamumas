@@ -15,6 +15,7 @@ interface MonthlyFlowChartProps {
   boughtFullPriceLabel: string
   bankBalanceLabel: string
   curtailedByExportLimitLabel?: string
+  expiredCreditsLabel?: string
 }
 
 type MonthlyChartRow = {
@@ -28,6 +29,7 @@ type MonthlyChartRow = {
   boughtFullPrice: number
   bankBalance: number
   curtailedByExportLimit: number
+  expiredCredits: number
 }
 
 /**
@@ -51,6 +53,7 @@ export function MonthlyFlowChart({
   boughtFullPriceLabel,
   bankBalanceLabel,
   curtailedByExportLimitLabel,
+  expiredCreditsLabel,
 }: MonthlyFlowChartProps) {
   const data: MonthlyChartRow[] = rows.map((row, i) => ({
     month: monthLabels[i] ?? String(i + 1),
@@ -63,11 +66,13 @@ export function MonthlyFlowChart({
     boughtFullPrice: Math.round(row.boughtFullPrice),
     bankBalance: Math.round(row.bankBalance),
     curtailedByExportLimit: Math.round(row.curtailedByExportLimit),
+    expiredCredits: Math.round(row.expiredCredits),
   }))
 
   const hasCurtailment = data.some((row) => row.curtailedByExportLimit > 0)
   const hasCharging = data.some((row) => row.chargedToBattery > 0)
   const hasWaste = data.some((row) => row.wastedProduction > 0)
+  const hasExpiredCredits = data.some((row) => row.expiredCredits > 0)
 
   const sum = (key: Exclude<keyof MonthlyChartRow, 'month'>) => data.reduce((total, row) => total + row[key], 0)
 
@@ -89,6 +94,9 @@ export function MonthlyFlowChart({
   )
   if (hasCurtailment && curtailedByExportLimitLabel) {
     rowsSpec.push({ label: curtailedByExportLimitLabel, key: 'curtailedByExportLimit', className: 'text-orange-700', showTotal: true })
+  }
+  if (hasExpiredCredits && expiredCreditsLabel) {
+    rowsSpec.push({ label: expiredCreditsLabel, key: 'expiredCredits', className: 'text-violet-700', showTotal: true })
   }
 
   return (

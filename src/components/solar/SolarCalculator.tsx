@@ -23,6 +23,7 @@ import {
   SOLAR_YIELD_PRESETS,
 } from '../../lib/calculations/constants'
 import type { SettlementMethodId, SolarInputs, SystemCostMode } from '../../lib/calculations/types'
+import { formatEuro, formatKwh } from '../../lib/format'
 import { NumberField, PercentField } from '../shared/NumberField'
 import { PresetSelect } from '../shared/PresetSelect'
 import { MonthlyProfileEditor } from '../shared/MonthlyProfileEditor'
@@ -534,7 +535,21 @@ export function SolarCalculator() {
           boughtFullPriceLabel={t('solar.flowBoughtFullPrice')}
           bankBalanceLabel={t('solar.flowBankBalance')}
           curtailedByExportLimitLabel={t('solar.flowCurtailedByExportLimit')}
+          expiredCreditsLabel={t('solar.flowExpiredCredits')}
         />
+        {(() => {
+          const totalExpired = monthlyBreakdown.reduce((s, r) => s + r.expiredCredits, 0)
+          if (totalExpired <= 0 || local.expiredCreditCompensationPerKwh <= 0) return null
+          const compensation = totalExpired * local.expiredCreditCompensationPerKwh
+          return (
+            <p className="mt-2 text-xs text-slate-600">
+              {t('solar.flowExpiredCreditsCompensationNote', {
+                kwh: formatKwh(totalExpired),
+                eur: formatEuro(compensation),
+              })}
+            </p>
+          )
+        })()}
       </section>
 
       <section className="rounded-lg border border-slate-200 bg-white p-4">
