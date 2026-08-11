@@ -127,20 +127,21 @@ export function MonthlyFlowChart({
         <ComposedChart data={data} margin={{ top: 8, right: 16, left: 8, bottom: 8 }}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="month" />
-          <YAxis width={60} />
+          <YAxis yAxisId="bars" width={60} />
+          <YAxis yAxisId="balance" orientation="right" width={70} stroke="#0369a1" tickFormatter={(v) => formatKwh(v)} />
           <Tooltip content={<FlowTooltip />} />
           <Legend />
-          <Bar dataKey="production" name={productionLabel} fill="#facc15" />
-          <Bar dataKey="consumption" name={consumptionLabel} fill="#64748b" />
-          {hasCharging && <Bar dataKey="chargedToBattery" name={chargedToBatteryLabel} fill="#0d9488" />}
-          <Bar dataKey="exported" name={exportedLabel} fill="#16a34a" />
-          {hasWaste && <Bar dataKey="wastedProduction" name={wastedProductionLabel} fill="#94a3b8" />}
-          <Bar dataKey="boughtFromBank" name={boughtFromBankLabel} stackId="bought" fill="#d97706" />
-          <Bar dataKey="boughtFullPrice" name={boughtFullPriceLabel} stackId="bought" fill="#dc2626" />
+          <Bar yAxisId="bars" dataKey="production" name={productionLabel} fill="#facc15" />
+          <Bar yAxisId="bars" dataKey="consumption" name={consumptionLabel} fill="#64748b" />
+          {hasCharging && <Bar yAxisId="bars" dataKey="chargedToBattery" name={chargedToBatteryLabel} fill="#0d9488" />}
+          <Bar yAxisId="bars" dataKey="exported" name={exportedLabel} fill="#16a34a" />
+          {hasWaste && <Bar yAxisId="bars" dataKey="wastedProduction" name={wastedProductionLabel} fill="#94a3b8" />}
+          <Bar yAxisId="bars" dataKey="boughtFromBank" name={boughtFromBankLabel} stackId="bought" fill="#d97706" />
+          <Bar yAxisId="bars" dataKey="boughtFullPrice" name={boughtFullPriceLabel} stackId="bought" fill="#dc2626" />
           {hasCurtailment && curtailedByExportLimitLabel && (
-            <Bar dataKey="curtailedByExportLimit" name={curtailedByExportLimitLabel} fill="#c2410c" />
+            <Bar yAxisId="bars" dataKey="curtailedByExportLimit" name={curtailedByExportLimitLabel} fill="#c2410c" />
           )}
-          <Line type="monotone" dataKey="bankBalance" name={bankBalanceLabel} stroke="#0369a1" strokeWidth={2} dot={false} />
+          <Line yAxisId="balance" type="monotone" dataKey="bankBalance" name={bankBalanceLabel} stroke="#0369a1" strokeWidth={2} dot={false} />
         </ComposedChart>
       </ResponsiveContainer>
 
