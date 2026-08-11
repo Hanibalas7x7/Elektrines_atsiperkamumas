@@ -116,7 +116,8 @@ export function MonthlyFlowChart({
           <YAxis width={60} />
           <Tooltip
             formatter={(value) => formatKwh(Number(value))}
-            contentStyle={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: '6px', opacity: 1 }}
+            wrapperStyle={{ backgroundColor: '#fff', border: '1px solid #e2e8f0', borderRadius: '6px' }}
+            contentStyle={{ background: '#fff', border: 'none', borderRadius: '6px' }}
           />
           <Legend />
           <Bar dataKey="production" name={productionLabel} fill="#facc15" />
