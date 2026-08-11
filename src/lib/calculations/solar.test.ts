@@ -200,6 +200,15 @@ describe('getSettlementMethodParams', () => {
     expect(params.flatFeeAnnual).toBeCloseTo(5.0336 * 12 * 10, 6)
   })
 
+  it('capacity-fee uses export limit kW (not installed kW) when hasExportPowerLimit is set', () => {
+    const params = getSettlementMethodParams(
+      'capacity-fee',
+      baseInputs({ capacityKw: 10, hasExportPowerLimit: true, exportPowerLimitKw: 1 }),
+      0,
+    )
+    expect(params.flatFeeAnnual).toBeCloseTo(5.0336 * 12 * 1, 6)
+  })
+
   it('percentage retains a share of banked surplus with no cash fee', () => {
     const params = getSettlementMethodParams('percentage', baseInputs({ percentageRetainedByEso: 37 }), 1)
     expect(params.creditFactor).toBeCloseTo(0.63, 6)

@@ -190,13 +190,20 @@ export function getSettlementMethodParams(
         feeRatePerKwh: escalate(inputs.perKwhFeeNow, inputs.perKwhFeeEscalationPct, year),
         flatFeeAnnual: 0,
       }
-    case 'capacity-fee':
+    case 'capacity-fee': {
+      // The capacity fee is based on the *permitted* export capacity, not the full installed kW.
+      // If ESO has set an export power limit, that limit (not the nameplate capacity) determines
+      // the billable kW, since that is the power the connection point is registered for.
+      const billableKw = inputs.hasExportPowerLimit
+        ? Math.min(inputs.capacityKw, inputs.exportPowerLimitKw)
+        : inputs.capacityKw
       return {
         creditFactor: 1,
         feeRatePerKwh: 0,
         flatFeeAnnual:
-          escalate(inputs.capacityFeePerKwMonth, inputs.capacityFeeEscalationPct, year) * 12 * inputs.capacityKw,
+          escalate(inputs.capacityFeePerKwMonth, inputs.capacityFeeEscalationPct, year) * 12 * billableKw,
       }
+    }
     case 'percentage':
       return { creditFactor: 1 - inputs.percentageRetainedByEso / 100, feeRatePerKwh: 0, flatFeeAnnual: 0 }
     case 'tariff-manual':
