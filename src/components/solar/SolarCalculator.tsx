@@ -536,6 +536,7 @@ export function SolarCalculator() {
           bankBalanceLabel={t('solar.flowBankBalance')}
           curtailedByExportLimitLabel={t('solar.flowCurtailedByExportLimit')}
           expiredCreditsLabel={t('solar.flowExpiredCredits')}
+          retainedByEsoLabel={t('solar.flowRetainedByEso')}
         />
         {(() => {
           const totalExpired = monthlyBreakdown.reduce((s, r) => s + r.expiredCredits, 0)

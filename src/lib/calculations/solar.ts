@@ -428,6 +428,12 @@ export interface MonthlyBreakdownRow {
   curtailedByExportLimit: number
   /** kWh of banked credit that expired unused this month (24-month window elapsed); these are compensated at expiredCreditCompensationPerKwh. */
   expiredCredits: number
+  /**
+   * kWh of exported energy retained by ESO as a network-usage fee (nonzero only for the
+   * 'percentage' settlement method). The remaining (1 - retainedPct) fraction goes to the credit
+   * bank. Showing this explains why the bank balance can be lower than the raw exported kWh.
+   */
+  retainedByEso: number
 }
 
 /**
@@ -453,9 +459,11 @@ export function computeMonthlyBreakdown(
   // 'no-export' never sends anything to the grid, so there is no settlement method and no credit bank -
   // whatever the battery couldn't use is simply lost, regardless of any (irrelevant) export power limit.
   const isExportable = inputs.batteryMode !== 'no-export'
-  const netMetering = isExportable
-    ? simulateNetMeteringMonthly(surplus, deficit, getSettlementMethodParams(inputs.settlementMethod, inputs, 0).creditFactor)
+  const settlementParams = isExportable ? getSettlementMethodParams(inputs.settlementMethod, inputs, 0) : null
+  const netMetering = isExportable && settlementParams
+    ? simulateNetMeteringMonthly(surplus, deficit, settlementParams.creditFactor)
     : null
+  const creditFactor = settlementParams ? settlementParams.creditFactor : 1
 
   return monthlyProduction.map((production, m) => ({
     month: m,
@@ -470,6 +478,7 @@ export function computeMonthlyBreakdown(
     bankBalance: netMetering ? netMetering.bankBalance[m] : 0,
     curtailedByExportLimit: isExportable ? curtailed[m] : 0,
     expiredCredits: netMetering ? netMetering.expiredCredits[m] : 0,
+    retainedByEso: isExportable ? surplus[m] * (1 - creditFactor) : 0,
   }))
 }
 

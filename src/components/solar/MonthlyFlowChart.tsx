@@ -16,6 +16,7 @@ interface MonthlyFlowChartProps {
   bankBalanceLabel: string
   curtailedByExportLimitLabel?: string
   expiredCreditsLabel?: string
+  retainedByEsoLabel?: string
 }
 
 type MonthlyChartRow = {
@@ -30,6 +31,7 @@ type MonthlyChartRow = {
   bankBalance: number
   curtailedByExportLimit: number
   expiredCredits: number
+  retainedByEso: number
 }
 
 /**
@@ -54,6 +56,7 @@ export function MonthlyFlowChart({
   bankBalanceLabel,
   curtailedByExportLimitLabel,
   expiredCreditsLabel,
+  retainedByEsoLabel,
 }: MonthlyFlowChartProps) {
   const data: MonthlyChartRow[] = rows.map((row, i) => ({
     month: monthLabels[i] ?? String(i + 1),
@@ -67,12 +70,14 @@ export function MonthlyFlowChart({
     bankBalance: Math.round(row.bankBalance),
     curtailedByExportLimit: Math.round(row.curtailedByExportLimit),
     expiredCredits: Math.round(row.expiredCredits),
+    retainedByEso: Math.round(row.retainedByEso),
   }))
 
   const hasCurtailment = data.some((row) => row.curtailedByExportLimit > 0)
   const hasCharging = data.some((row) => row.chargedToBattery > 0)
   const hasWaste = data.some((row) => row.wastedProduction > 0)
   const hasExpiredCredits = data.some((row) => row.expiredCredits > 0)
+  const hasRetainedByEso = data.some((row) => row.retainedByEso > 0)
 
   const sum = (key: Exclude<keyof MonthlyChartRow, 'month'>) => data.reduce((total, row) => total + row[key], 0)
 
@@ -97,6 +102,9 @@ export function MonthlyFlowChart({
   }
   if (hasExpiredCredits && expiredCreditsLabel) {
     rowsSpec.push({ label: expiredCreditsLabel, key: 'expiredCredits', className: 'text-violet-700', showTotal: true })
+  }
+  if (hasRetainedByEso && retainedByEsoLabel) {
+    rowsSpec.push({ label: retainedByEsoLabel, key: 'retainedByEso', className: 'text-rose-700', showTotal: true })
   }
 
   return (
