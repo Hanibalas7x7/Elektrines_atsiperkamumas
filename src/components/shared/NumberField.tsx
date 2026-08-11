@@ -24,7 +24,14 @@ export function NumberField({ label, value, onChange, suffix, min = 0, step = 'a
         />
         {suffix && <span className="text-slate-500">{suffix}</span>}
       </div>
-      {hint && <span className="text-xs text-slate-400">{hint}</span>}
+      {hint && hint.length > 100 ? (
+        <details className="text-xs text-slate-400">
+          <summary className="cursor-pointer select-none">{hint.slice(0, 60)}…</summary>
+          <span>{hint}</span>
+        </details>
+      ) : hint ? (
+        <span className="text-xs text-slate-400">{hint}</span>
+      ) : null}
     </label>
   )
 }

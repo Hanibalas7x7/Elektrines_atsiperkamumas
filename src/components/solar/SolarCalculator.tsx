@@ -517,17 +517,20 @@ export function SolarCalculator() {
         />
       </Section>
 
-      <div className="text-xs text-slate-500">
-        {local.hasBattery && local.exportSurplus && (
-          <p>
-            {t('solar.assumptionBattery')} {t('solar.assumptionCreditExpiry')}
-          </p>
-        )}
-        {local.hasBattery && !local.exportSurplus && <p>{t('solar.assumptionBattery')}</p>}
-        {!local.hasBattery && local.exportSurplus && <p>{t('solar.assumptionCreditExpiry')}</p>}
-        {!local.hasBattery && !local.exportSurplus && <p>{t('solar.assumptionNoBatteryNoExport')}</p>}
-        {local.exportSurplus && local.hasExportPowerLimit && <p>{t('solar.assumptionExportPowerLimit')}</p>}
-      </div>
+      <details className="rounded-lg border border-slate-200 bg-slate-50 px-4 py-2 text-xs text-slate-500">
+        <summary className="cursor-pointer select-none font-medium text-slate-600">{t('solar.assumptionsLabel')}</summary>
+        <div className="mt-2 flex flex-col gap-2">
+          {local.hasBattery && local.exportSurplus && (
+            <p>
+              {t('solar.assumptionBattery')} {t('solar.assumptionCreditExpiry')}
+            </p>
+          )}
+          {local.hasBattery && !local.exportSurplus && <p>{t('solar.assumptionBattery')}</p>}
+          {!local.hasBattery && local.exportSurplus && <p>{t('solar.assumptionCreditExpiry')}</p>}
+          {!local.hasBattery && !local.exportSurplus && <p>{t('solar.assumptionNoBatteryNoExport')}</p>}
+          {local.exportSurplus && local.hasExportPowerLimit && <p>{t('solar.assumptionExportPowerLimit')}</p>}
+        </div>
+      </details>
 
       <section className="rounded-lg border border-slate-200 bg-white p-4">
         <h3 className="mb-1 text-sm font-semibold text-slate-800">{t('solar.sectionMonthlyFlow')}</h3>
