@@ -408,7 +408,16 @@ export function SolarCalculator() {
           <input
             type="checkbox"
             checked={settings.useMonthlyConsumption}
-            onChange={(e) => setSettings((prev) => ({ ...prev, useMonthlyConsumption: e.target.checked }))}
+            onChange={(e) => {
+              const checked = e.target.checked
+              setSettings((prev) => ({
+                ...prev,
+                useMonthlyConsumption: checked,
+                ...(checked
+                  ? { directMonthlyConsumptionKwh: new Array(12).fill(Math.round(prev.annualConsumptionKwh / 12)) }
+                  : {}),
+              }))
+            }}
           />
           {t('solar.consumptionModeMonthly')}
         </label>
@@ -419,6 +428,7 @@ export function SolarCalculator() {
               monthLabels={t('common.months', { returnObjects: true }) as string[]}
               values={settings.directMonthlyConsumptionKwh}
               onChange={(v) => setSettings((prev) => ({ ...prev, directMonthlyConsumptionKwh: v }))}
+              totalLabel={t('common.monthlyProfileTotal')}
             />
           </div>
         ) : (

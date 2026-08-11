@@ -2,6 +2,7 @@
   "common": {
     "currencyPerKwh": "€/kWh",
     "years": "metai",
+    "monthlyProfileTotal": "Iš viso per metus",
     "months": ["Sau", "Vas", "Kov", "Bal", "Geg", "Bir", "Lie", "Rgp", "Rgs", "Spa", "Lap", "Grd"],
     "resetDefaults": "Atstatyti numatytus",
     "custom": "Pasirinktinai"

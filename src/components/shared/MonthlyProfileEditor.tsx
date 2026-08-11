@@ -3,10 +3,13 @@ interface MonthlyProfileEditorProps {
   monthLabels: readonly string[]
   values: number[]
   onChange: (values: number[]) => void
+  /** When provided, shows the annual sum (kWh/yr) below the grid with this label. */
+  totalLabel?: string
 }
 
 /** Grid of 12 numeric inputs, one per calendar month. */
-export function MonthlyProfileEditor({ label, monthLabels, values, onChange }: MonthlyProfileEditorProps) {
+export function MonthlyProfileEditor({ label, monthLabels, values, onChange, totalLabel }: MonthlyProfileEditorProps) {
+  const annualTotal = totalLabel ? values.reduce((sum, v) => sum + (v || 0), 0) : 0
   return (
     <div className="flex flex-col gap-1 text-sm">
       <span className="font-medium text-slate-700">{label}</span>
@@ -28,6 +31,12 @@ export function MonthlyProfileEditor({ label, monthLabels, values, onChange }: M
           </label>
         ))}
       </div>
+      {totalLabel && (
+        <div className="mt-1 text-xs text-slate-500">
+          {totalLabel}:{' '}
+          <span className="font-semibold text-slate-700">{Math.round(annualTotal).toLocaleString()} kWh/m.</span>
+        </div>
+      )}
     </div>
   )
 }
