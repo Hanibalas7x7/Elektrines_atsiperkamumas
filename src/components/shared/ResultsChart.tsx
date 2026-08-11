@@ -24,7 +24,10 @@ export function ResultsChart({ result, title, cumulativeLabel, netLabel }: Resul
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="year" />
           <YAxis width={70} />
-          <Tooltip formatter={(value) => formatEuro(Number(value))} />
+          <Tooltip
+            formatter={(value) => formatEuro(Number(value))}
+            contentStyle={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: '6px', opacity: 1 }}
+          />
           <ReferenceLine y={0} stroke="#94a3b8" />
           <Line type="monotone" dataKey="cumulative" name={cumulativeLabel} stroke="#0ea5e9" dot={false} strokeWidth={2} />
           <Line type="monotone" dataKey="net" name={netLabel} stroke="#16a34a" dot={false} strokeWidth={2} />

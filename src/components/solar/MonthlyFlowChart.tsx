@@ -114,7 +114,10 @@ export function MonthlyFlowChart({
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="month" />
           <YAxis width={60} />
-          <Tooltip formatter={(value) => formatKwh(Number(value))} />
+          <Tooltip
+            formatter={(value) => formatKwh(Number(value))}
+            contentStyle={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: '6px', opacity: 1 }}
+          />
           <Legend />
           <Bar dataKey="production" name={productionLabel} fill="#facc15" />
           <Bar dataKey="consumption" name={consumptionLabel} fill="#64748b" />
