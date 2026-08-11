@@ -2,6 +2,20 @@ import { CartesianGrid, Line, LineChart, ReferenceLine, ResponsiveContainer, Too
 import type { CashFlowResult } from '../../lib/calculations/types'
 import { formatEuro } from '../../lib/format'
 
+function CashFlowTooltip({ active, payload, label }: { active?: boolean; payload?: { dataKey: string; name: string; value: number; color: string }[]; label?: string }) {
+  if (!active || !payload?.length) return null
+  return (
+    <div className="rounded-md border border-slate-200 bg-white px-3 py-2 text-xs shadow-md">
+      <p className="mb-1 font-semibold text-slate-700">{label}</p>
+      {payload.map((entry) => (
+        <p key={entry.dataKey} style={{ color: entry.color }} className="my-0.5">
+          {entry.name}: {formatEuro(Number(entry.value))}
+        </p>
+      ))}
+    </div>
+  )
+}
+
 interface ResultsChartProps {
   result: CashFlowResult
   title: string
@@ -24,11 +38,7 @@ export function ResultsChart({ result, title, cumulativeLabel, netLabel }: Resul
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="year" />
           <YAxis width={70} />
-          <Tooltip
-            formatter={(value) => formatEuro(Number(value))}
-            wrapperStyle={{ backgroundColor: '#fff', border: '1px solid #e2e8f0', borderRadius: '6px' }}
-            contentStyle={{ background: '#fff', border: 'none', borderRadius: '6px' }}
-          />
+          <Tooltip content={<CashFlowTooltip />} />
           <ReferenceLine y={0} stroke="#94a3b8" />
           <Line type="monotone" dataKey="cumulative" name={cumulativeLabel} stroke="#0ea5e9" dot={false} strokeWidth={2} />
           <Line type="monotone" dataKey="net" name={netLabel} stroke="#16a34a" dot={false} strokeWidth={2} />

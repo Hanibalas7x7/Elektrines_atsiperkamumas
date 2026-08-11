@@ -2,6 +2,20 @@ import { Bar, CartesianGrid, ComposedChart, Legend, Line, ResponsiveContainer, T
 import type { MonthlyBreakdownRow } from '../../lib/calculations/solar'
 import { formatKwh } from '../../lib/format'
 
+function FlowTooltip({ active, payload, label }: { active?: boolean; payload?: { dataKey: string; name: string; value: number; color: string }[]; label?: string }) {
+  if (!active || !payload?.length) return null
+  return (
+    <div className="rounded-md border border-slate-200 bg-white px-3 py-2 text-xs shadow-md">
+      <p className="mb-1 font-semibold text-slate-700">{label}</p>
+      {payload.map((entry) => (
+        <p key={entry.dataKey} style={{ color: entry.color }} className="my-0.5">
+          {entry.name}: {formatKwh(Number(entry.value))}
+        </p>
+      ))}
+    </div>
+  )
+}
+
 interface MonthlyFlowChartProps {
   rows: MonthlyBreakdownRow[]
   monthLabels: string[]
@@ -114,11 +128,7 @@ export function MonthlyFlowChart({
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="month" />
           <YAxis width={60} />
-          <Tooltip
-            formatter={(value) => formatKwh(Number(value))}
-            wrapperStyle={{ backgroundColor: '#fff', border: '1px solid #e2e8f0', borderRadius: '6px' }}
-            contentStyle={{ background: '#fff', border: 'none', borderRadius: '6px' }}
-          />
+          <Tooltip content={<FlowTooltip />} />
           <Legend />
           <Bar dataKey="production" name={productionLabel} fill="#facc15" />
           <Bar dataKey="consumption" name={consumptionLabel} fill="#64748b" />
