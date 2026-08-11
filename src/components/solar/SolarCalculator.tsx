@@ -532,9 +532,9 @@ export function SolarCalculator() {
         </div>
       </details>
 
-      <section className="rounded-lg border border-slate-200 bg-white p-4">
-        <h3 className="mb-1 text-sm font-semibold text-slate-800">{t('solar.sectionMonthlyFlow')}</h3>
-        <p className="mb-3 text-xs text-slate-500">{t('solar.sectionMonthlyFlowHint')}</p>
+      <details className="rounded-lg border border-slate-200 bg-white p-4" open>
+        <summary className="cursor-pointer select-none text-sm font-semibold text-slate-800">{t('solar.sectionMonthlyFlow')}</summary>
+        <p className="mb-3 mt-1 text-xs text-slate-500">{t('solar.sectionMonthlyFlowHint')}</p>
         <MonthlyFlowChart
           rows={monthlyBreakdown}
           monthLabels={t('common.months', { returnObjects: true }) as string[]}
@@ -564,7 +564,7 @@ export function SolarCalculator() {
             </p>
           )
         })()}
-      </section>
+      </details>
 
       <section className="rounded-lg border border-slate-200 bg-white p-4">
         <h3 className="mb-3 flex items-center text-sm font-semibold text-slate-800">

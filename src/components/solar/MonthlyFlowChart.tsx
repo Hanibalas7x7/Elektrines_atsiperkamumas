@@ -2,6 +2,12 @@ import { Bar, CartesianGrid, ComposedChart, Legend, Line, ResponsiveContainer, T
 import type { MonthlyBreakdownRow } from '../../lib/calculations/solar'
 import { formatKwh } from '../../lib/format'
 
+/** Compact tick label for Y axes: keeps numbers short on narrow screens. */
+function compactKwh(v: number): string {
+  if (v >= 1000) return `${+(v / 1000).toFixed(1)}k`
+  return String(Math.round(v))
+}
+
 function FlowTooltip({ active, payload, label }: { active?: boolean; payload?: { dataKey: string; name: string; value: number; color: string }[]; label?: string }) {
   if (!active || !payload?.length) return null
   return (
@@ -127,8 +133,8 @@ export function MonthlyFlowChart({
         <ComposedChart data={data} margin={{ top: 8, right: 16, left: 8, bottom: 8 }}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="month" />
-          <YAxis yAxisId="bars" width={60} />
-          <YAxis yAxisId="balance" orientation="right" width={70} stroke="#0369a1" tickFormatter={(v) => formatKwh(v)} />
+          <YAxis yAxisId="bars" width={45} tickFormatter={compactKwh} />
+          <YAxis yAxisId="balance" orientation="right" width={50} stroke="#0369a1" tickFormatter={compactKwh} />
           <Tooltip content={<FlowTooltip />} />
           <Legend />
           <Bar yAxisId="bars" dataKey="production" name={productionLabel} fill="#facc15" />
